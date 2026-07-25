@@ -1,16 +1,23 @@
 package com.nexusledger.core;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
 public abstract class ContaBancaria {
     private String nmrConta;
     private String agencia;
     private String nomeTitular;
     protected double saldo;
+    protected List<Transacao> historico;
 
-    //Não passa o saldo como paramêtro, pois toda nova conta se inicia com saldo zerado
     public ContaBancaria(String nmrConta, String agencia, String nomeTitular) {
         this.nmrConta = nmrConta;
         this.agencia = agencia;
         this.nomeTitular = nomeTitular;
+        this.historico = new ArrayList<>();
     }
 
     public String getNmrConta() {
@@ -25,26 +32,25 @@ public abstract class ContaBancaria {
         return agencia;
     }
 
-
     public String getNomeTitular() {
         return nomeTitular;
     }
 
-    //!!! SEGURANÇA SETTERS = Em um sistema bancário seguro,
-    // o saldo só muda através de transações (saque/depósito),
-    // número de uma conta nunca muda depois de aberta.
+    public List<Transacao> getHistorico() {
+        return Collections.unmodifiableList(historico);
+    }
+
     public void setNomeTitular(String nomeTitular) {
         this.nomeTitular = nomeTitular;
     }
-
-    // THROW NEW para que o erro realmente pare a execução do metodo,
-    // bloqueie a transação e avise o sistema que algo deu errado
 
     public void depositar(double valor){
         if (valor<=0) {
             throw new IllegalArgumentException("O valor do depósito deve ser maior que zero.");
         } else {
             saldo += valor;
+            Transacao transacao = new Transacao(UUID.randomUUID(), LocalDateTime.now(), "DEPÓSITO", valor);
+            this.historico.add(transacao);
         }
     }
 
@@ -55,9 +61,10 @@ public abstract class ContaBancaria {
             throw new IllegalArgumentException("Saldo Insuficiente.");
         } else {
             saldo -= valor;
+            Transacao transacao = new Transacao(UUID.randomUUID(), LocalDateTime.now(), "SAQUE", valor);
+            this.historico.add(transacao);
         }
     }
-     //OBRIGA cada subclasse (ContaCorrente, ContaPoupanca)
-    // a implementar a sua própria lógica de cálculo, permitindo o uso do Polimorfismo no sistema.
+
     public abstract double calcularTributos();
 }

@@ -1,5 +1,8 @@
 package com.nexusledger.core;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 public class ContaCorrente extends ContaBancaria{
     private double limiteChequeES;
 
@@ -18,12 +21,12 @@ public class ContaCorrente extends ContaBancaria{
         if(valor <= 0){
             throw new IllegalArgumentException("O valor do saque deve ser maior que 0.");
         }
-        // SOBRESCRITA DE REGRA DE NEGÓCIO: Na Conta Corrente, o cliente pode usar o Cheque Especial.
-        // Portanto, o limite de saque passa a ser saldo atual SOMADO ao limite de crédito liberado pelo banco.
         else if(valor > this.saldo + this.limiteChequeES){
             throw new IllegalArgumentException("Saldo Insuficiente.");
         } else {
             this.saldo -= valor;
+            Transacao transacao = new Transacao(UUID.randomUUID(), LocalDateTime.now(), "SAQUE (CHEQUE ESPECIAL)", valor);
+            this.historico.add(transacao);
         }
     }
 }
