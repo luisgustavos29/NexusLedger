@@ -1,6 +1,6 @@
 package com.nexusledger.core;
 
-import com.nexusledger.exception.SaldoInsuficienteException; // Importação da nossa nova exceção
+import com.nexusledger.exception.SaldoInsuficienteException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,17 +13,23 @@ public class ContaPoupancaTest {
 
     @BeforeEach
     void prepararConta() {
-        conta = new ContaPoupanca("54321-0", "0001", "Luis Gustavo", 0.05);
+        conta = new ContaPoupanca("54321-0", "0001", "Davi", 0.05);
     }
 
     @Test
     @DisplayName("Deve render juros corretamente sobre o saldo positivo")
     void testRenderJurosComSucesso() {
         conta.depositar(1000.00);
-
         conta.renderJuros();
 
         assertEquals(1050.00, conta.getSaldo(), "O saldo deve ser 1050.00 após render juros");
+    }
+
+    @Test
+    @DisplayName("Não deve alterar o saldo se os juros forem aplicados em uma conta zerada")
+    void testRenderJurosContaZerada() {
+        conta.renderJuros();
+        assertEquals(0.0, conta.getSaldo(), "O saldo deve se manter 0.0");
     }
 
     @Test
@@ -34,16 +40,24 @@ public class ContaPoupancaTest {
     }
 
     @Test
+    @DisplayName("Deve permitir saque normal quando há saldo suficiente")
+    void testSaqueComSucesso() {
+        conta.depositar(200.00);
+        conta.sacar(50.00);
+
+        assertEquals(150.00, conta.getSaldo(), "O saldo deve bater perfeitamente após a subtração");
+        assertEquals("SAQUE", conta.getHistorico().get(1).tipoOperacao());
+    }
+
+    @Test
     @DisplayName("Deve bloquear saque maior que o saldo (Não possui Cheque Especial)")
     void testBloquearSaqueSemSaldo() {
         conta.depositar(100.00);
 
-        // Substituímos o IllegalArgumentException pelo nosso SaldoInsuficienteException
         SaldoInsuficienteException excecao = assertThrows(SaldoInsuficienteException.class, () -> {
             conta.sacar(150.00);
         });
 
-        // Atualizamos a mensagem para bater exatamente com a que está na ContaBancaria mãe
         assertEquals("Saldo Insuficiente para realizar o saque.", excecao.getMessage());
     }
 }

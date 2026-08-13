@@ -19,8 +19,7 @@ public class ContaCorrente extends ContaBancaria{
         return this.saldo * 0.01;
     }
 
-    @Override
-    public void sacar(double valor){
+    public void sacar(double valor, String descricao){
         if(valor <= 0){
             throw new ValorInvalidoException("O valor do saque deve ser maior que 0.");
         }
@@ -28,8 +27,16 @@ public class ContaCorrente extends ContaBancaria{
             throw new SaldoInsuficienteException("Saldo Insuficiente. Limite do Cheque Especial excedido.");
         } else {
             this.saldo -= valor;
-            Transacao transacao = new Transacao(UUID.randomUUID(), LocalDateTime.now(), "SAQUE (CHEQUE ESPECIAL)", valor);
+
+            String descricaoFinal = (this.saldo < 0) ? descricao + " (USO DO CHEQUE ESPECIAL)" : descricao;
+
+            Transacao transacao = new Transacao(UUID.randomUUID(), LocalDateTime.now(), descricaoFinal, valor);
             this.historico.add(transacao);
         }
+    }
+
+    @Override
+    public void sacar(double valor){
+        sacar(valor, "SAQUE");
     }
 }

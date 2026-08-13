@@ -47,26 +47,35 @@ public abstract class ContaBancaria {
         this.nomeTitular = nomeTitular;
     }
 
-    public void depositar(double valor){
+    public void depositar(double valor, String descricao){
         if (valor <= 0) {
             throw new ValorInvalidoException("O valor do depósito deve ser maior que zero.");
         } else {
             saldo += valor;
-            Transacao transacao = new Transacao(UUID.randomUUID(), LocalDateTime.now(), "DEPÓSITO", valor);
+            Transacao transacao = new Transacao(UUID.randomUUID(), LocalDateTime.now(), descricao, valor);
             this.historico.add(transacao);
         }
     }
 
-    public void sacar(double valor){
+    public void depositar(double valor){
+        depositar(valor, "DEPÓSITO");
+    }
+
+
+    public void sacar(double valor, String descricao){
         if(valor <= 0){
             throw new ValorInvalidoException("O valor do saque deve ser maior que 0.");
         } else if (valor > saldo){
             throw new SaldoInsuficienteException("Saldo Insuficiente para realizar o saque.");
         } else {
             saldo -= valor;
-            Transacao transacao = new Transacao(UUID.randomUUID(), LocalDateTime.now(), "SAQUE", valor);
+            Transacao transacao = new Transacao(UUID.randomUUID(), LocalDateTime.now(), descricao, valor);
             this.historico.add(transacao);
         }
+    }
+
+    public void sacar(double valor){
+        sacar(valor, "SAQUE");
     }
 
     public abstract double calcularTributos();

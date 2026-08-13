@@ -13,10 +13,10 @@ public class ContaPoupanca extends ContaBancaria{
         return 0.0;
     }
 
-    public void renderJuros(){
-        if (this.saldo > 0){
-            double rendimento = this.saldo * this.taxaRendimento;
-            this.saldo += rendimento;
+    public void renderJuros() {
+        if (this.saldo > 0) {
+            double juros = this.saldo * this.taxaRendimento;
+            this.depositar(juros, "RENDIMENTO DE JUROS");
         }
     }
 

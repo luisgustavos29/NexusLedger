@@ -1,6 +1,6 @@
 package com.nexusledger.core;
 
-import com.nexusledger.exception.SaldoInsuficienteException; // Importação da nossa nova exceção
+import com.nexusledger.exception.SaldoInsuficienteException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,7 @@ public class ContaCorrenteTest {
 
     @BeforeEach
     void prepararConta() {
-        conta = new ContaCorrente("12345-6", "0001", "Luis Gustavo", 500.00);
+        conta = new ContaCorrente("12345-6", "0001", "Luis", 500.00);
     }
 
     @Test
@@ -27,27 +27,41 @@ public class ContaCorrenteTest {
     }
 
     @Test
-    @DisplayName("Deve permitir saque usando o limite do Cheque Especial")
-    void testSacarComChequeEspecial() {
+    @DisplayName("Deve aceitar descrição customizada via sobrecarga no depósito")
+    void testDepositarComDescricaoCustomizada() {
+        conta.depositar(150.00, "PIX RECEBIDO");
+        assertEquals("PIX RECEBIDO", conta.getHistorico().get(0).tipoOperacao(), "A descrição customizada deve ser gravada no Record");
+    }
 
+    @Test
+    @DisplayName("Deve realizar saque normal sem usar o limite e registrar como 'SAQUE'")
+    void testSacarSemUsarLimite() {
+        conta.depositar(500.00);
+        conta.sacar(200.00); // Saldo final: 300 (Positivo)
+
+        assertEquals(300.00, conta.getSaldo(), "O saldo deve ser 300.00 (Positivo)");
+        assertEquals("SAQUE", conta.getHistorico().get(1).tipoOperacao(), "Se não entrou no cheque especial, a descrição deve ser apenas SAQUE");
+    }
+
+    @Test
+    @DisplayName("Deve permitir saque usando o limite e avisar na descrição")
+    void testSacarComChequeEspecial() {
         conta.depositar(100.00);
-        conta.sacar(300.00);
+        conta.sacar(300.00); // Saldo final: -200
 
         assertEquals(-200.00, conta.getSaldo(), "O saldo deve ficar negativo dentro do limite do cheque especial");
         assertEquals(2, conta.getHistorico().size(), "Deve registrar o depósito e o saque");
-        assertEquals("SAQUE (CHEQUE ESPECIAL)", conta.getHistorico().get(1).tipoOperacao());
+
+        assertEquals("SAQUE (USO DO CHEQUE ESPECIAL)", conta.getHistorico().get(1).tipoOperacao());
     }
 
     @Test
     @DisplayName("Deve bloquear saque que ultrapasse o saldo mais o limite")
     void testBloquearSaqueAcimaDoLimite() {
-
-        // Substituímos o IllegalArgumentException pelo nosso SaldoInsuficienteException
         SaldoInsuficienteException excecao = assertThrows(SaldoInsuficienteException.class, () -> {
             conta.sacar(600.00);
         });
 
-        // Atualizamos a mensagem para bater exatamente com a que está na ContaCorrente
         assertEquals("Saldo Insuficiente. Limite do Cheque Especial excedido.", excecao.getMessage());
     }
 
