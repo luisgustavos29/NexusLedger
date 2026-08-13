@@ -1,5 +1,6 @@
 package com.nexusledger.core;
 
+import com.nexusledger.exception.SaldoInsuficienteException; // Importação da nossa nova exceção
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,10 +38,12 @@ public class ContaPoupancaTest {
     void testBloquearSaqueSemSaldo() {
         conta.depositar(100.00);
 
-        IllegalArgumentException excecao = assertThrows(IllegalArgumentException.class, () -> {
+        // Substituímos o IllegalArgumentException pelo nosso SaldoInsuficienteException
+        SaldoInsuficienteException excecao = assertThrows(SaldoInsuficienteException.class, () -> {
             conta.sacar(150.00);
         });
 
-        assertEquals("Saldo Insuficiente.", excecao.getMessage());
+        // Atualizamos a mensagem para bater exatamente com a que está na ContaBancaria mãe
+        assertEquals("Saldo Insuficiente para realizar o saque.", excecao.getMessage());
     }
 }

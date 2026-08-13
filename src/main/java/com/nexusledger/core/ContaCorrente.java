@@ -1,5 +1,8 @@
 package com.nexusledger.core;
 
+import com.nexusledger.exception.SaldoInsuficienteException;
+import com.nexusledger.exception.ValorInvalidoException;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -19,10 +22,10 @@ public class ContaCorrente extends ContaBancaria{
     @Override
     public void sacar(double valor){
         if(valor <= 0){
-            throw new IllegalArgumentException("O valor do saque deve ser maior que 0.");
+            throw new ValorInvalidoException("O valor do saque deve ser maior que 0.");
         }
         else if(valor > this.saldo + this.limiteChequeES){
-            throw new IllegalArgumentException("Saldo Insuficiente.");
+            throw new SaldoInsuficienteException("Saldo Insuficiente. Limite do Cheque Especial excedido.");
         } else {
             this.saldo -= valor;
             Transacao transacao = new Transacao(UUID.randomUUID(), LocalDateTime.now(), "SAQUE (CHEQUE ESPECIAL)", valor);

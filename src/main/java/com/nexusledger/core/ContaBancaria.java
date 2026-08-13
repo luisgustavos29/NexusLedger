@@ -1,5 +1,8 @@
 package com.nexusledger.core;
 
+import com.nexusledger.exception.SaldoInsuficienteException;
+import com.nexusledger.exception.ValorInvalidoException;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,8 +48,8 @@ public abstract class ContaBancaria {
     }
 
     public void depositar(double valor){
-        if (valor<=0) {
-            throw new IllegalArgumentException("O valor do depósito deve ser maior que zero.");
+        if (valor <= 0) {
+            throw new ValorInvalidoException("O valor do depósito deve ser maior que zero.");
         } else {
             saldo += valor;
             Transacao transacao = new Transacao(UUID.randomUUID(), LocalDateTime.now(), "DEPÓSITO", valor);
@@ -54,11 +57,11 @@ public abstract class ContaBancaria {
         }
     }
 
-    public void sacar (double valor){
-        if(valor<=0){
-            throw new IllegalArgumentException("O valor do saque deve ser maior que 0.");
+    public void sacar(double valor){
+        if(valor <= 0){
+            throw new ValorInvalidoException("O valor do saque deve ser maior que 0.");
         } else if (valor > saldo){
-            throw new IllegalArgumentException("Saldo Insuficiente.");
+            throw new SaldoInsuficienteException("Saldo Insuficiente para realizar o saque.");
         } else {
             saldo -= valor;
             Transacao transacao = new Transacao(UUID.randomUUID(), LocalDateTime.now(), "SAQUE", valor);
