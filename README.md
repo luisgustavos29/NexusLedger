@@ -51,3 +51,5 @@ Além do SOLID, o projeto serve como um laboratório prático de Engenharia de S
 * **Modelagem:** Astah UML (Casos de Uso, Classes e Atividades)
 
 ---
+
+👨‍💻 Desenvolvido por [Luís Gustavo](https://github.com/luisgustavos29)
