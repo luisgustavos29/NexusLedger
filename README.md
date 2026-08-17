@@ -7,6 +7,8 @@ O nome **NexusLedger** reflete a essência da arquitetura do sistema:
 
 O **NexusLedger** é um motor transacional (Core Banking MVP) desenvolvido em Java. O projeto foi construído do zero, sem o uso de frameworks engessados, com o objetivo de demonstrar a aplicação profunda e rigorosa de **Programação Orientada a Objetos (POO)**, **Princípios SOLID**, Estruturas de Dados e testes automatizados.
 
+📄 **Leia a documentação arquitetural completa:** [Documentacao_Tecnica.pdf](./docs/Documentacao_Tecnica.pdf)
+
 ---
 
 ## 🚀 Principais Funcionalidades
